@@ -15,7 +15,7 @@ public class TextBox {
    public String Text = "";
    public int TextLength = 0;
 
-   private boolean selected = false;
+   public boolean selected = false;
    
    TextBox() {
       // CREATE OBJECT DEFAULT TEXTBOX
