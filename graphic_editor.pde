@@ -105,7 +105,6 @@ public void setup() {
  */
 public void draw() {
     
-    fill(0, 0, 0);
     textSize(16);
     text("Quadrado", 15, 25);
     text("Círculo", 15, 325);
