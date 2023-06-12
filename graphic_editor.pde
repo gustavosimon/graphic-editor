@@ -31,6 +31,8 @@ public void setup() {
    size(800, 600);
    background(255, 255, 255);
 
+    // Configura as Text Boxes com as customizações
+
    rSquare = new TextBox();
    rSquare.X = 25;
    rSquare.Y = 50;
@@ -102,6 +104,7 @@ public void setup() {
  * Desenha as configurações do editor gráfico na tela.
  */
 public void draw() {
+    
     fill(0, 0, 0);
     textSize(16);
     text("Quadrado", 15, 25);
@@ -133,9 +136,10 @@ public void draw() {
 * Evento de precionar botão do mouse. 
 */
 public void mousePressed() {
-    // Se 
+    // Se a última configuração selecionado foi de círculo, indica que deve desenhar círculos
     if (rCircle.selected || gCircle.selected || bCircle.selected || dCircle.selected) {
         drawCircle = true;
+    // Se a última configuração selecionado foi de quadrado, indica que deve desenhar quadrados
     } else if (rSquare.selected || gSquare.selected || bSquare.selected || wSquare.selected || hSquare.selected) {
         drawCircle = false;
     }
@@ -165,21 +169,83 @@ public void keyPressed() {
 }
 
 /** 
- * Desenha um quadrado.
+ * Desenha um quadrado utilizando o algoritmo clássico de Bresenham para desenhar linhas.
  */
 private void drawSquare() {
-    fill(255, 255, 255);
-    stroke(color(int(rSquare.Text), int(gSquare.Text), int(bSquare.Text)));
-    rectMode(CENTER);
-    rect(mouseX, mouseY, int(wSquare.Text), int(hSquare.Text));
-    rectMode(CORNER);
+    
+    // Calcula as extremidadades finais que devem ser desenhadas
+    int x = mouseX + int(wSquare.Text);
+    int y = mouseY + int(hSquare.Text);
+
+    // Desenha as quatro linhas para formar o quadrado
+    drawLine(mouseX, mouseY, x, mouseY);
+    drawLine(x, mouseY, x, y);
+    drawLine(x, y, mouseX, y);
+    drawLine(mouseX, y, mouseX, mouseY);
+}
+
+/** 
+ * Desenha uma linha utilizando o algoritmo clássico de Bresenham.
+ *
+ * Recebe duas cordenadas XY para traçar a reta.
+ */
+private void drawLine(int x1, int y1, int x2, int y2) {
+    int dx = Math.abs(x2 - x1);
+    int dy = Math.abs(y2 - y1);
+    int sx = (x1 < x2) ? 1 : -1;
+    int sy = (y1 < y2) ? 1 : -1;
+    int err = dx - dy;
+    stroke(int(rSquare.Text), int(gSquare.Text), int(bSquare.Text));
+    while (true) {
+        point(x1, y1);
+        if (x1 == x2 && y1 == y2) {
+            break;
+        }
+        int e2 = 2 * err;
+        if (e2 > -dy) {
+            err -= dy;
+            x1 += sx;
+        }
+        if (e2 < dx) {
+            err += dx;
+            y1 += sy;
+        }
+    }
     stroke(0, 0, 0);
 }
 
 /** 
- * Desenha um círculo.
+ * Desenha um círculo utilizando o algoritmo clássico de Bresenham.
  */
 private void drawCircle() {
-  fill(color(int(rCircle.Text), int(gCircle.Text), int(bCircle.Text)));
-  ellipse(mouseX, mouseY, int(dCircle.Text), int(dCircle.Text));
+    int x = 0;
+    int y = int(dCircle.Text) / 2;
+    int d = 3 - 2 * y;
+    stroke(int(rCircle.Text), int(gCircle.Text), int(bCircle.Text));
+    while (x <= y) {
+        plotPoints(mouseX, mouseY, x, y);
+        if (d < 0) {
+            d = d + 4 * x + 6;
+        } else {
+            d = d + 4 * (x - y) + 10;
+            y--;
+        }
+        x++;
+    }
+    stroke(0, 0, 0);
+}
+
+/** 
+ * Desenha na tela os pontos necessários para o desenho do círculo 
+ * utilizando o algoritmo clássico de Bresenham.
+ */
+private void plotPoints(int centerX, int centerY, int x, int y) {
+    point(centerX + x, centerY + y);
+    point(centerX - x, centerY + y);
+    point(centerX + x, centerY - y);
+    point(centerX - x, centerY - y);
+    point(centerX + y, centerY + x);
+    point(centerX - y, centerY + x);
+    point(centerX + y, centerY - x);
+    point(centerX - y, centerY - x);
 }
